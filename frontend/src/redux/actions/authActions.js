@@ -11,6 +11,7 @@ export const postLoginData = (email, password) => async (dispatch) => {
       payload: data,
     });
     localStorage.setItem('token', data.token);
+    toast.dismiss();
     toast.success(data.msg);
 
   }
@@ -20,6 +21,7 @@ export const postLoginData = (email, password) => async (dispatch) => {
       type: LOGIN_FAILURE,
       payload: { msg }
     })
+    toast.dismiss();
     toast.error(msg);
   }
 }
