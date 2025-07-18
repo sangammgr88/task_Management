@@ -1,20 +1,45 @@
 pipeline {
   agent any
 
-    stage('Build Docker Image') {
+  environment {
+    MONGO_URI = credentials('mongo-uri')
+    JWT_SECRET = credentials('jwt-secret')
+    API_URL = credentials('api-url') // For frontend use
+  }
+
+  stages {
+    stage('Frontend: Install & Build') {
       steps {
-        sh 'docker build -t taskmanager-image .'
+        dir('frontend') {
+          bat '''
+            echo "REACT_APP_API_URL=${API_URL}" > .env
+            npm install
+            npm run build
+          '''
+        }
       }
     }
 
-    stage('Run Container') {
+    stage('Backend: Install & Start') {
       steps {
-        sh '''
-          docker stop myapp-container || true
-          docker rm myapp-container || true
-          docker run -d -p 3000:3000 --name myapp-container myapp-image
-        '''
+        dir('backend') {
+          bat '''
+            echo "MONGO_URI=${MONGO_URI}" > .env
+            echo "JWT_SECRET=${JWT_SECRET}" >> .env
+            npm install
+            nohup node server.js > output.log 2>&1 &
+          '''
+        }
       }
+    }
+  }
+
+  post {
+    success {
+      echo '✅ Build completed successfully.'
+    }
+    failure {
+      echo '❌ Build failed.'
     }
   }
 }
