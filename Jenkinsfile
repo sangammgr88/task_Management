@@ -1,11 +1,16 @@
 pipeline {
   agent any
 
+  //environment {
+    //MONGO_URI = credentials('mongo-uri')
+    //JWT_SECRET = credentials('jwt-secret')
+    //API_URL = credentials('api-url') // For frontend use
+  //}
+
   environment {
-    MONGO_URI = credentials('mongo-uri')
-    JWT_SECRET = credentials('jwt-secret')
-    API_URL = credentials('api-url') // For frontend use
-  }
+    GITHUB_TOKEN = credentials('github-token')  // 'github-token' is the credential ID you set in Jenkins
+}
+
 
   stages {
     stage('Frontend: Install & Build') {
