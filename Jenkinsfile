@@ -1,10 +1,6 @@
 pipeline {
   agent any
-
-  environment {
-    GITHUB_TOKEN = credentials('github-token') // optional if needed for private repo
-  }
-
+  
   stages {
     stage('Clone Repo') {
       steps {
