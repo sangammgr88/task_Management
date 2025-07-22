@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Clone Repo') {
       steps {
-        git credentialsId: 'github-token', url: 'https://github.com/sangammgr88/task_Management.git'
+        git 'https://github.com/sangammgr88/task_Management.git'
       }
     }
 
