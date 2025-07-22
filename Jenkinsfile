@@ -1,10 +1,14 @@
 pipeline {
   agent any
+
+ environment {
+    GITHUB_TOKEN = credentials('github-token') // optional if needed for private repo
+  }
   
   stages {
     stage('Clone Repo') {
       steps {
-        git 'https://github.com/sangammgr88/task_Management.git'
+        git credentialsId: 'github-token', url: 'https://github.com/sangammgr88/task_Management.git'
       }
     }
 
