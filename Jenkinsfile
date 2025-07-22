@@ -1,50 +1,32 @@
 pipeline {
   agent any
 
-  //environment {
-    //MONGO_URI = credentials('mongo-uri')
-    //JWT_SECRET = credentials('jwt-secret')
-    //API_URL = credentials('api-url') // For frontend use
-  //}
-
   environment {
-    GITHUB_TOKEN = credentials('github-token')  // 'github-token' is the credential ID you set in Jenkins
-}
-
+    GITHUB_TOKEN = credentials('github-token') // optional if needed for private repo
+  }
 
   stages {
-    stage('Frontend: Install & Build') {
+    stage('Clone Repo') {
       steps {
-        dir('frontend') {
-          bat '''
-            echo "REACT_APP_API_URL=${API_URL}" > .env
-            npm install
-            npm run build
-          '''
-        }
+        git credentialsId: 'github-token', url: 'https://github.com/yourname/your-repo.git'
       }
     }
 
-    stage('Backend: Install & Start') {
+    stage('Build & Run with Docker Compose') {
       steps {
-        dir('backend') {
-          bat '''
-            echo "MONGO_URI=${MONGO_URI}" > .env
-            echo "JWT_SECRET=${JWT_SECRET}" >> .env
-            npm install
-            nohup node server.js > output.log 2>&1 &
-          '''
-        }
+        bat 'docker-compose down || exit 0'
+        bat 'docker-compose build'
+        bat 'docker-compose up -d'
       }
     }
   }
 
   post {
     success {
-      echo '✅ Build completed successfully.'
+      echo '✅ App deployed using Docker!'
     }
     failure {
-      echo '❌ Build failed.'
+      echo '❌ Build or deployment failed.'
     }
   }
 }
